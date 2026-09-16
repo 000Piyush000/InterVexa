@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+*.egg-info/
+
+# Flask
+instance/
+.flaskenv
+
+# Environment
+.env
+.env.local
+
+# Project data (uploaded documents, generated indexes and exports)
+data/*/*.pdf
+data/*/*.txt
+embeddings/*/
+static/uploads/*
+static/exports/*
+!data/*/.gitkeep
+!embeddings/.gitkeep
+!static/uploads/.gitkeep
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log

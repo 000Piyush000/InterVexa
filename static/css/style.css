@@ -1,0 +1,652 @@
+/* =========================================================================
+   AI Interview Copilot — global styles
+   Minimal custom CSS layered on top of Bootstrap 5 utility classes.
+   ========================================================================= */
+
+:root {
+  --ic-primary: #7c6cff;
+  --ic-primary-dark: #5b4bdb;
+  --ic-accent: #22d3c5;
+  --ic-accent-warm: #ff8a65;
+  --ic-radius: 18px;
+  --ic-radius-sm: 12px;
+  --ic-shadow: 0 10px 30px rgba(24, 20, 60, 0.08);
+  --ic-shadow-hover: 0 16px 40px rgba(24, 20, 60, 0.14);
+  --ic-bg: #f5f5fb;
+  --ic-surface: #ffffff;
+  --ic-surface-alt: #f0f0fa;
+  --ic-border: #e8e8f2;
+  --ic-text-muted: #6c6c85;
+  --ic-font-heading: "Sora", "Segoe UI", system-ui, sans-serif;
+  --ic-font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+[data-bs-theme="dark"] {
+  --ic-bg: #0a0b14;
+  --ic-surface: #12131f;
+  --ic-surface-alt: #171827;
+  --ic-border: #24263b;
+  --ic-text-muted: #9394b8;
+  --ic-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --ic-shadow-hover: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--ic-bg);
+  transition: background-color 0.25s ease, color 0.25s ease;
+  font-family: var(--ic-font-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--ic-font-heading);
+}
+
+a {
+  text-decoration: none;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Navbar                                                                  */
+/* ---------------------------------------------------------------------- */
+.ic-navbar {
+  background: var(--ic-surface);
+  border-bottom: 1px solid var(--ic-border);
+  box-shadow: var(--ic-shadow);
+}
+
+.ic-brand {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: inherit !important;
+}
+
+.ic-logo-mark {
+  display: inline-flex;
+  margin-right: 0.55rem;
+  flex-shrink: 0;
+}
+
+.ic-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  font-family: var(--ic-font-heading);
+  font-size: 1.2rem;
+}
+
+.ic-brand-tagline {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ic-text-muted);
+}
+
+.ic-nav-btn {
+  border: 1px solid var(--ic-border);
+  background: var(--ic-surface-alt);
+  border-radius: 50px;
+  padding: 0.5rem 1rem;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.15s ease;
+}
+
+.ic-nav-btn:hover {
+  border-color: var(--ic-primary);
+  color: var(--ic-primary);
+}
+
+.theme-toggle-btn {
+  border-radius: 50px;
+  border: 1px solid var(--ic-border);
+  background: var(--ic-bg);
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+  transform: scale(1.08);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Hero                                                                    */
+/* ---------------------------------------------------------------------- */
+.ic-hero {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(124, 108, 255, 0.38), transparent 55%),
+    radial-gradient(circle at 88% 8%, rgba(34, 211, 197, 0.28), transparent 50%),
+    radial-gradient(circle at 50% 100%, rgba(255, 138, 101, 0.12), transparent 60%),
+    linear-gradient(180deg, #0b0c1a 0%, #14162a 100%);
+  border-radius: 0 0 40px 40px;
+  color: #fff;
+  padding: 6rem 1rem 6.5rem;
+}
+
+.ic-hero-eyebrow {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50px;
+  padding: 0.4rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #d9d6ff;
+}
+
+.ic-hero h1 {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+}
+
+.ic-hero h1 .ic-hero-accent {
+  background: linear-gradient(90deg, #a89bff, var(--ic-accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ic-hero p.lead {
+  color: rgba(255, 255, 255, 0.75);
+  max-width: 620px;
+}
+
+.ic-hero-cta .btn {
+  border-radius: 50px;
+  padding: 0.75rem 1.75rem;
+  font-weight: 600;
+}
+
+.ic-hero-cta .btn-light {
+  color: var(--ic-primary-dark);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Cards                                                                   */
+/* ---------------------------------------------------------------------- */
+.ic-card {
+  background: var(--ic-surface);
+  border: 1px solid var(--ic-border);
+  border-radius: var(--ic-radius);
+  box-shadow: var(--ic-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.ic-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--ic-shadow-hover);
+  border-color: var(--ic-primary);
+}
+
+.ic-company-card {
+  cursor: pointer;
+  padding: 1.5rem;
+  height: 100%;
+}
+
+.ic-company-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--ic-primary), var(--ic-accent));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.ic-company-card .badge-indexed {
+  font-size: 0.72rem;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Features band                                                          */
+/* ---------------------------------------------------------------------- */
+.ic-features-band {
+  background: linear-gradient(180deg, #0a0b14 0%, #10111f 100%);
+  border-radius: 32px;
+  padding: 3.5rem 1.5rem;
+  margin: 4rem 0;
+}
+
+.ic-features-band .ic-section-title,
+.ic-features-band .ic-section-subtitle {
+  color: #fff;
+}
+
+.ic-features-band .ic-section-subtitle {
+  color: rgba(232, 232, 245, 0.6);
+}
+
+.ic-feature-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: var(--ic-radius);
+  padding: 1.75rem;
+  height: 100%;
+  color: #e8e8f5;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.ic-feature-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--ic-primary);
+}
+
+.ic-feature-card p {
+  color: rgba(232, 232, 245, 0.65);
+}
+
+.ic-feature-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--ic-primary), var(--ic-accent));
+  color: #fff;
+  font-size: 1.2rem;
+  margin-bottom: 1.1rem;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Modals, accordion (Help & Support / Add Company)                       */
+/* ---------------------------------------------------------------------- */
+.ic-modal {
+  background: var(--ic-surface);
+  border: 1px solid var(--ic-border);
+  border-radius: var(--ic-radius);
+}
+
+.accordion-item {
+  background: transparent;
+  border-color: var(--ic-border);
+}
+
+.accordion-button {
+  background: var(--ic-surface-alt);
+  color: inherit;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.accordion-button:not(.collapsed) {
+  background: var(--ic-surface-alt);
+  color: var(--ic-primary);
+  box-shadow: none;
+}
+
+.accordion-button:focus {
+  box-shadow: none;
+  border-color: var(--ic-border);
+}
+
+.accordion-body {
+  color: var(--ic-text-muted);
+  font-size: 0.9rem;
+}
+
+.ic-icon-choice {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid var(--ic-border);
+  background: var(--ic-surface-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: var(--ic-text-muted);
+  transition: all 0.15s ease;
+}
+
+.ic-icon-choice.active,
+.ic-icon-choice:hover {
+  border-color: var(--ic-primary);
+  color: var(--ic-primary);
+  background: rgba(124, 108, 255, 0.12);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Section headings                                                       */
+/* ---------------------------------------------------------------------- */
+.ic-section-title {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.ic-section-subtitle {
+  color: var(--ic-text-muted);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Upload page                                                             */
+/* ---------------------------------------------------------------------- */
+.ic-dropzone {
+  border: 2px dashed var(--ic-border);
+  border-radius: var(--ic-radius);
+  background: var(--ic-surface);
+  padding: 3rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.ic-dropzone.dragover {
+  border-color: var(--ic-primary);
+  background: rgba(97, 83, 240, 0.06);
+}
+
+.ic-dropzone i {
+  font-size: 2.6rem;
+  color: var(--ic-primary);
+}
+
+.ic-file-chip {
+  background: var(--ic-bg);
+  border: 1px solid var(--ic-border);
+  border-radius: 50px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ic-file-chip .remove-file {
+  cursor: pointer;
+  color: #dc3545;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Chat layout                                                             */
+/* ---------------------------------------------------------------------- */
+.ic-chat-shell {
+  height: calc(100vh - 70px);
+  min-height: 560px;
+}
+
+.ic-chat-sidebar {
+  background: var(--ic-surface);
+  border-right: 1px solid var(--ic-border);
+  height: 100%;
+  overflow-y: auto;
+  padding: 1.25rem;
+}
+
+.ic-mode-pill {
+  border-radius: 50px;
+  border: 1px solid var(--ic-border);
+  background: var(--ic-bg);
+  padding: 0.5rem 0.9rem;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+  text-align: left;
+  color: inherit;
+}
+
+.ic-mode-pill.active {
+  background: var(--ic-primary);
+  border-color: var(--ic-primary);
+  color: #fff;
+}
+
+.ic-chat-main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.ic-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  scroll-behavior: smooth;
+}
+
+.ic-chat-empty {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--ic-text-muted);
+  text-align: center;
+  padding: 2rem;
+}
+
+.ic-chat-empty i {
+  font-size: 3.5rem;
+  color: var(--ic-primary);
+  opacity: 0.5;
+  margin-bottom: 1rem;
+}
+
+.ic-bubble-row {
+  display: flex;
+  margin-bottom: 1.1rem;
+  animation: ic-fade-in 0.25s ease;
+}
+
+.ic-bubble-row.user {
+  justify-content: flex-end;
+}
+
+.ic-bubble {
+  max-width: 78%;
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--ic-radius);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.ic-bubble.user {
+  background: var(--ic-primary);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.ic-bubble.assistant {
+  background: var(--ic-surface);
+  border: 1px solid var(--ic-border);
+  border-bottom-left-radius: 4px;
+  box-shadow: var(--ic-shadow);
+}
+
+.ic-bubble-meta {
+  font-size: 0.72rem;
+  color: var(--ic-text-muted);
+  margin-top: 0.35rem;
+}
+
+.ic-sources {
+  margin-top: 0.75rem;
+  border-top: 1px dashed var(--ic-border);
+  padding-top: 0.6rem;
+  font-size: 0.8rem;
+}
+
+.ic-source-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--ic-bg);
+  border: 1px solid var(--ic-border);
+  border-radius: 50px;
+  padding: 0.2rem 0.7rem;
+  margin: 0.15rem 0.3rem 0.15rem 0;
+}
+
+.ic-confidence-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.ic-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.6rem 0.2rem;
+}
+
+.ic-typing span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ic-primary);
+  opacity: 0.4;
+  animation: ic-typing-bounce 1.1s infinite ease-in-out;
+}
+
+.ic-typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.ic-typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes ic-typing-bounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+}
+
+@keyframes ic-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ic-chat-input-bar {
+  border-top: 1px solid var(--ic-border);
+  background: var(--ic-surface);
+  padding: 1rem 1.25rem;
+}
+
+.ic-chat-input-bar textarea {
+  resize: none;
+  border-radius: var(--ic-radius-sm);
+}
+
+.ic-suggested-chip {
+  border: 1px solid var(--ic-border);
+  background: var(--ic-bg);
+  border-radius: 50px;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ic-suggested-chip:hover {
+  border-color: var(--ic-primary);
+  color: var(--ic-primary);
+}
+
+.ic-topic-bar {
+  background: var(--ic-bg);
+  border-radius: 50px;
+  overflow: hidden;
+  height: 8px;
+}
+
+.ic-topic-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--ic-primary), var(--ic-accent));
+  border-radius: 50px;
+}
+
+.favorite-star {
+  cursor: pointer;
+  color: var(--ic-text-muted);
+}
+
+.favorite-star.active {
+  color: #f5b301;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Misc                                                                    */
+/* ---------------------------------------------------------------------- */
+.ic-spinner-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 18, 28, 0.35);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.ic-footer {
+  color: var(--ic-text-muted);
+  font-size: 0.85rem;
+  padding: 2rem 0;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ic-border);
+  border-radius: 50px;
+}
+
+@media (max-width: 767.98px) {
+  .ic-chat-sidebar {
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--ic-border);
+  }
+
+  .ic-chat-shell {
+    height: auto;
+  }
+
+  .ic-chat-messages {
+    min-height: 50vh;
+  }
+}

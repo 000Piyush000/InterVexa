@@ -1,0 +1,27 @@
+[
+  {
+    "question": "Is my data ever sent anywhere?",
+    "answer": "No. Every document you upload, every embedding, and every generated answer stays entirely on your own machine via FAISS and a local Ollama model \u2014 nothing leaves your computer.",
+    "id": 1
+  },
+  {
+    "question": "Why did it say it can't answer my question?",
+    "answer": "Intervexa only answers from documents you've uploaded for that company. If the uploaded interview experiences don't mention it, it tells you directly instead of guessing.",
+    "id": 2
+  },
+  {
+    "question": "What do I need installed before chat works?",
+    "answer": "Install Ollama, run `ollama serve` in a terminal, then `ollama pull llama3`. You can still upload and process documents before that \u2014 only the chat answers need Ollama running.",
+    "id": 3
+  },
+  {
+    "question": "Can I add my own company?",
+    "answer": "Yes \u2014 use the \"Add Company\" option to create a new company, then upload PDF or TXT interview experiences for it from the Upload page.",
+    "id": 4
+  },
+  {
+    "question": "What file types are supported?",
+    "answer": "PDF and TXT files, up to the configured size limit per file (see the Upload page).",
+    "id": 5
+  }
+]

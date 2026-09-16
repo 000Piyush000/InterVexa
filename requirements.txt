@@ -1,0 +1,27 @@
+# Web framework
+Flask==3.0.3
+Werkzeug==3.0.4
+
+# RAG / LangChain stack
+langchain==0.2.16
+langchain-community==0.2.16
+langchain-text-splitters==0.2.4
+
+# Vector store
+faiss-cpu==1.8.0.post1
+
+# Embeddings
+sentence-transformers==3.0.1
+numpy==1.26.4
+
+# PDF / text extraction
+pypdf==4.3.1
+
+# Local LLM client (talks to a locally running Ollama server)
+ollama==0.3.3
+
+# Bonus: export chat history as a PDF
+reportlab==4.2.2
+
+# Utilities
+python-dotenv==1.0.1

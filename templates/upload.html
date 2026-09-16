@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upload Documents &middot; Intervexa</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22><text y=%2213%22 font-size=%2213%22>🎯</text></svg>" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+  <script>
+    (function () {
+      var savedTheme = localStorage.getItem("ic-theme") || "dark";
+      document.documentElement.setAttribute("data-bs-theme", savedTheme);
+    })();
+  </script>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg ic-navbar sticky-top py-3">
+    <div class="container">
+      <a class="navbar-brand ic-brand" href="{{ url_for('index') }}">
+        <span class="ic-logo-mark" aria-hidden="true">
+          <svg width="34" height="34" viewBox="0 0 32 32">
+            <defs>
+              <linearGradient id="icLogoGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#7c6cff"/>
+                <stop offset="100%" stop-color="#22d3c5"/>
+              </linearGradient>
+            </defs>
+            <rect x="1" y="1" width="30" height="30" rx="9" fill="url(#icLogoGrad)"/>
+            <path d="M10 21 L16 9 L22 21" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="16" cy="16.5" r="1.6" fill="#fff"/>
+          </svg>
+        </span>
+        <span class="ic-brand-text">
+          Intervexa
+          <small class="ic-brand-tagline">AI Interview Copilot</small>
+        </span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+          <li class="nav-item"><a class="nav-link active" href="{{ url_for('upload_page') }}">Upload</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('chat_page') }}">Chat</a></li>
+          <li class="nav-item mt-2 mt-lg-0">
+            <button type="button" class="ic-nav-btn" data-bs-toggle="modal" data-bs-target="#addCompanyModal">
+              <i class="bi bi-plus-circle"></i> Add Company
+            </button>
+          </li>
+          <li class="nav-item mt-2 mt-lg-0">
+            <button type="button" class="ic-nav-btn" data-bs-toggle="modal" data-bs-target="#supportModal">
+              <i class="bi bi-life-preserver"></i> Help &amp; Support
+            </button>
+          </li>
+          <li class="nav-item mt-2 mt-lg-0">
+            <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle dark mode">
+              <i class="bi bi-moon-stars-fill"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container my-5" style="max-width: 900px;">
+    <div class="text-center mb-5">
+      <h2 class="ic-section-title">Upload interview experiences</h2>
+      <p class="ic-section-subtitle">PDF or TXT files. They're automatically cleaned, chunked, embedded and indexed into FAISS &mdash; no manual steps needed.</p>
+    </div>
+
+    <div class="ic-card p-4 p-md-5 mb-5">
+      <form id="uploadForm">
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Company</label>
+          <select class="form-select form-select-lg" id="companySelect" name="company">
+            {% for company in companies %}
+            <option value="{{ company.name }}">{{ company.name }}</option>
+            {% endfor %}
+            <option value="Custom">Custom company&hellip;</option>
+          </select>
+        </div>
+
+        <div class="mb-4 d-none" id="customCompanyWrap">
+          <label class="form-label fw-semibold">Custom company name</label>
+          <input type="text" class="form-control form-control-lg" id="customCompanyInput" name="custom_company" placeholder="e.g. Netflix" maxlength="60">
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Files</label>
+          <div class="ic-dropzone" id="dropzone">
+            <i class="bi bi-cloud-arrow-up d-block mb-2"></i>
+            <p class="mb-1 fw-semibold">Drag &amp; drop PDF or TXT files here</p>
+            <p class="ic-section-subtitle small mb-0">or click to browse &middot; max {{ max_size_mb }}MB per file</p>
+            <input type="file" id="fileInput" name="files" accept=".pdf,.txt" multiple class="d-none">
+          </div>
+          <div id="fileChips" class="mt-3 d-flex flex-wrap gap-2"></div>
+        </div>
+
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary btn-lg" id="uploadSubmitBtn">
+            <i class="bi bi-upload me-2"></i>Upload &amp; Process
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <section>
+      <h5 class="mb-3">Processed companies</h5>
+      {% if companies and companies|selectattr('has_index')|list|length > 0 %}
+      <div class="table-responsive ic-card p-3">
+        <table class="table align-middle mb-0">
+          <thead>
+            <tr class="ic-section-subtitle small text-uppercase">
+              <th>Company</th>
+              <th>Files</th>
+              <th>Chunks</th>
+              <th>Status</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for company in companies %}
+            {% if company.has_index or company.num_files > 0 %}
+            <tr>
+              <td class="fw-semibold"><i class="bi {{ company.icon }} me-2"></i>{{ company.name }}</td>
+              <td>{{ company.num_files }}</td>
+              <td>{{ company.num_chunks }}</td>
+              <td>
+                {% if company.has_index %}
+                <span class="badge text-bg-success-subtle text-success-emphasis">Indexed</span>
+                {% else %}
+                <span class="badge text-bg-warning-subtle text-warning-emphasis">Pending</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                <button class="btn btn-sm btn-outline-secondary reprocess-btn" data-company="{{ company.name }}">
+                  <i class="bi bi-arrow-repeat me-1"></i>Reprocess
+                </button>
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('chat_page', company=company.name) }}">
+                  <i class="bi bi-chat-dots me-1"></i>Chat
+                </a>
+              </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="ic-card p-5 text-center">
+        <i class="bi bi-inboxes" style="font-size:2.5rem;color:var(--ic-primary);opacity:.5;"></i>
+        <p class="ic-section-subtitle mt-3 mb-0">No documents processed yet. Upload your first interview experience above to get started.</p>
+      </div>
+      {% endif %}
+    </section>
+  </main>
+
+  <footer class="ic-footer text-center border-top">
+    <div class="container">
+      <div class="fw-semibold mb-1">Intervexa</div>
+      <div>AI-powered interview prep, grounded in real experiences &middot; Runs 100% locally</div>
+    </div>
+  </footer>
+
+  <div class="ic-spinner-overlay d-none" id="spinnerOverlay">
+    <div class="ic-card p-4 text-center">
+      <div class="spinner-border text-primary mb-2" role="status"></div>
+      <p class="mb-0 fw-semibold" id="spinnerMessage">Processing documents&hellip;</p>
+      <p class="ic-section-subtitle small mb-0">Extracting text, chunking and generating embeddings</p>
+    </div>
+  </div>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer" style="z-index: 2100;"></div>
+
+  {% include "_modals.html" %}
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</body>
+</html>

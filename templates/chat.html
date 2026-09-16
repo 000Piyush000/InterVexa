@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat &middot; Intervexa</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22><text y=%2213%22 font-size=%2213%22>🎯</text></svg>" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+  <script>
+    (function () {
+      var savedTheme = localStorage.getItem("ic-theme") || "dark";
+      document.documentElement.setAttribute("data-bs-theme", savedTheme);
+    })();
+  </script>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg ic-navbar py-2">
+    <div class="container-fluid px-3">
+      <a class="navbar-brand ic-brand" href="{{ url_for('index') }}">
+        <span class="ic-logo-mark" aria-hidden="true">
+          <svg width="30" height="30" viewBox="0 0 32 32">
+            <defs>
+              <linearGradient id="icLogoGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#7c6cff"/>
+                <stop offset="100%" stop-color="#22d3c5"/>
+              </linearGradient>
+            </defs>
+            <rect x="1" y="1" width="30" height="30" rx="9" fill="url(#icLogoGrad)"/>
+            <path d="M10 21 L16 9 L22 21" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="16" cy="16.5" r="1.6" fill="#fff"/>
+          </svg>
+        </span>
+        <span class="ic-brand-text">
+          Intervexa
+          <small class="ic-brand-tagline">AI Interview Copilot</small>
+        </span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('upload_page') }}">Upload</a></li>
+          <li class="nav-item"><a class="nav-link active" href="{{ url_for('chat_page') }}">Chat</a></li>
+          <li class="nav-item mt-2 mt-lg-0">
+            <button type="button" class="ic-nav-btn" data-bs-toggle="modal" data-bs-target="#addCompanyModal">
+              <i class="bi bi-plus-circle"></i> Add Company
+            </button>
+          </li>
+          <li class="nav-item mt-2 mt-lg-0">
+            <button type="button" class="ic-nav-btn" data-bs-toggle="modal" data-bs-target="#supportModal">
+              <i class="bi bi-life-preserver"></i> Help &amp; Support
+            </button>
+          </li>
+          <li class="nav-item mt-2 mt-lg-0">
+            <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle dark mode">
+              <i class="bi bi-moon-stars-fill"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  {% if not ollama_status.available %}
+  <div class="alert alert-warning mb-0 rounded-0 text-center py-2 small" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+    Ollama isn't reachable right now &mdash; start it with <code>ollama serve</code> to enable answers.
+  </div>
+  {% elif not ollama_status.model_available %}
+  <div class="alert alert-warning mb-0 rounded-0 text-center py-2 small" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+    Model not pulled yet &mdash; run <code>ollama pull llama3</code> to enable answers.
+  </div>
+  {% endif %}
+
+  <div class="container-fluid ic-chat-shell">
+    <div class="row h-100 g-0">
+
+      <!-- Sidebar -->
+      <div class="col-md-3 ic-chat-sidebar">
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold small text-uppercase">Company</label>
+          <select class="form-select" id="companySelect">
+            {% for company in companies %}
+            <option value="{{ company.name }}" {% if company.name == selected_company %}selected{% endif %}>
+              {{ company.name }}{% if not company.has_index %} (no data){% endif %}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold small text-uppercase">Interview Mode</label>
+          <div class="d-flex flex-column gap-2" id="modeList">
+            {% for key, mode in modes.items() %}
+            <button type="button" class="ic-mode-pill {{ 'active' if key == selected_mode else '' }}" data-mode="{{ key }}">
+              <i class="bi {{ mode.icon }}"></i> {{ mode.label }}
+            </button>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold small text-uppercase d-flex justify-content-between align-items-center">
+            Suggested Questions
+          </label>
+          <div id="suggestedQuestions" class="d-flex flex-column gap-2"></div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold small text-uppercase">Frequently Asked Topics</label>
+          <div id="topicsPanel" class="d-flex flex-column gap-2"></div>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label fw-semibold small text-uppercase d-flex justify-content-between align-items-center">
+            Favorites
+            <span class="badge text-bg-secondary" id="favoritesCount">0</span>
+          </label>
+          <div id="favoritesList" class="d-flex flex-column gap-2">
+            <p class="ic-section-subtitle small mb-0">Star a question to save it here.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main chat -->
+      <div class="col-md-9 ic-chat-main">
+
+        <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+          <div class="d-flex align-items-center gap-2 flex-grow-1">
+            <i class="bi bi-search ic-section-subtitle"></i>
+            <input type="text" class="form-control form-control-sm border-0" id="searchChat" placeholder="Search this conversation&hellip;" style="max-width:280px;background:transparent;">
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-secondary" id="downloadChatBtn"><i class="bi bi-file-earmark-pdf"></i> Export PDF</button>
+            <button class="btn btn-sm btn-outline-danger" id="clearChatBtn"><i class="bi bi-trash3"></i> Clear</button>
+          </div>
+        </div>
+
+        <div class="ic-chat-messages" id="chatMessages">
+          <div class="ic-chat-empty" id="chatEmptyState">
+            <i class="bi bi-chat-square-text"></i>
+            <h5>Ask your first question</h5>
+            <p class="mb-0">Pick a company and interview mode, then ask things like<br>
+              &ldquo;What DSA questions were asked?&rdquo; or &ldquo;Summarize the interview experience.&rdquo;</p>
+          </div>
+        </div>
+
+        <div class="ic-chat-input-bar">
+          <div class="input-group">
+            <textarea class="form-control" id="chatInput" rows="1" placeholder="Ask about DSA, System Design, SQL or HR questions&hellip;"></textarea>
+            <button class="btn btn-primary px-4" id="sendBtn" type="button">
+              <i class="bi bi-send-fill"></i>
+            </button>
+          </div>
+          <div class="form-text">Press Enter to send &middot; Shift+Enter for a new line</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer" style="z-index: 2100;"></div>
+
+  <script type="application/json" id="chatHistoryData">{{ history | tojson }}</script>
+  <script type="application/json" id="chatConfigData">
+    {
+      "selectedCompany": {{ selected_company | tojson }},
+      "selectedMode": {{ selected_mode | tojson }},
+      "ollamaAvailable": {{ ollama_status.available | tojson }}
+    }
+  </script>
+
+  {% include "_modals.html" %}
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</body>
+</html>

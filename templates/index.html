@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Intervexa &middot; AI Interview Copilot</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22><text y=%2213%22 font-size=%2213%22>🎯</text></svg>" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+  <script>
+    // Apply saved theme before first paint to avoid a light/dark flash.
+    (function () {
+      var savedTheme = localStorage.getItem("ic-theme") || "dark";
+      document.documentElement.setAttribute("data-bs-theme", savedTheme);
+    })();
+  </script>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg ic-navbar sticky-top py-3">
+    <div class="container">
+      <a class="navbar-brand ic-brand" href="{{ url_for('index') }}">
+        <span class="ic-logo-mark" aria-hidden="true">
+          <svg width="34" height="34" viewBox="0 0 32 32">
+            <defs>
+              <linearGradient id="icLogoGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#7c6cff"/>
+                <stop offset="100%" stop-color="#22d3c5"/>
+              </linearGradient>
+            </defs>
+            <rect x="1" y="1" width="30" height="30" rx="9" fill="url(#icLogoGrad)"/>
+            <path d="M10 21 L16 9 L22 21" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="16" cy="16.5" r="1.6" fill="#fff"/>
+          </svg>
+        </span>
+        <span class="ic-brand-text">
+          Intervexa
+          <small class="ic-brand-tagline">AI Interview Copilot</small>
+        </span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('upload_page') }}">Upload</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('chat_page') }}">Chat</a></li>
+          <li class="nav-item mt-2 mt-lg-0">
+            <button type="button" class="ic-nav-btn" data-bs-toggle="modal" data-bs-target="#addCompanyModal">
+              <i class="bi bi-plus-circle"></i> Add Company
+            </button>
+          </li>
+          <li class="nav-item mt-2 mt-lg-0">
+            <button type="button" class="ic-nav-btn" data-bs-toggle="modal" data-bs-target="#supportModal">
+              <i class="bi bi-life-preserver"></i> Help &amp; Support
+            </button>
+          </li>
+          <li class="nav-item mt-2 mt-lg-0">
+            <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle dark mode">
+              <i class="bi bi-moon-stars-fill"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  {% if not ollama_status.available %}
+  <div class="container mt-3">
+    <div class="alert alert-warning d-flex align-items-start gap-2 mb-0" role="alert">
+      <i class="bi bi-exclamation-triangle-fill mt-1"></i>
+      <div>
+        <strong>Ollama isn't reachable.</strong>
+        Start it with <code>ollama serve</code> and pull a model with <code>ollama pull llama3</code> so the chat can generate answers.
+      </div>
+    </div>
+  </div>
+  {% elif not ollama_status.model_available %}
+  <div class="container mt-3">
+    <div class="alert alert-warning d-flex align-items-start gap-2 mb-0" role="alert">
+      <i class="bi bi-exclamation-triangle-fill mt-1"></i>
+      <div>
+        <strong>Llama 3 model not found.</strong>
+        Run <code>ollama pull llama3</code> in a terminal before asking questions.
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <header class="ic-hero mt-3 mt-md-4">
+    <div class="container text-center position-relative">
+      <span class="ic-hero-eyebrow mb-3"><i class="bi bi-stars"></i> Interview prep, grounded in reality</span>
+      <h1 class="mt-3 mb-3">Ace your next interview with <span class="ic-hero-accent">real experiences</span>, not guesswork.</h1>
+      <p class="lead mx-auto">Upload company-specific interview experiences and ask questions in plain English.
+        Every answer is retrieved from your documents with FAISS + Sentence Transformers and grounded, cited, and hallucination-free.</p>
+      <div class="ic-hero-cta d-flex flex-column flex-sm-row gap-3 justify-content-center mt-4">
+        <a href="{{ url_for('upload_page') }}" class="btn btn-light btn-lg"><i class="bi bi-cloud-upload me-2"></i>Upload Documents</a>
+        <a href="{{ url_for('chat_page') }}" class="btn btn-outline-light btn-lg"><i class="bi bi-chat-dots me-2"></i>Start Chat</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container my-5">
+
+    <section class="text-center mb-5">
+      <h2 class="ic-section-title">Choose a company to explore</h2>
+      <p class="ic-section-subtitle">Every card links straight into the chat, pre-filtered to that company's uploaded interview experiences.</p>
+    </section>
+
+    <div class="row g-4 mb-5">
+      {% for company in companies %}
+      <div class="col-6 col-md-4 col-lg-3">
+        <a href="{{ url_for('chat_page', company=company.name) }}" class="text-decoration-none text-reset">
+          <div class="ic-card ic-company-card">
+            <div class="d-flex align-items-start justify-content-between">
+              <div class="ic-company-icon"><i class="bi {{ company.icon }}"></i></div>
+              {% if company.has_index %}
+              <span class="badge text-bg-success-subtle text-success-emphasis badge-indexed"><i class="bi bi-check-circle-fill"></i> Indexed</span>
+              {% else %}
+              <span class="badge text-bg-secondary-subtle text-secondary-emphasis badge-indexed">No data yet</span>
+              {% endif %}
+            </div>
+            <h5 class="mt-3 mb-1">{{ company.name }}</h5>
+            <p class="ic-section-subtitle mb-0 small">{{ company.num_files }} document{{ 's' if company.num_files != 1 else '' }} &middot; {{ company.num_chunks }} chunks</p>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+      <div class="col-6 col-md-4 col-lg-3">
+        <button type="button" class="ic-card ic-company-card d-flex flex-column align-items-center justify-content-center text-center border-0 w-100 h-100" data-bs-toggle="modal" data-bs-target="#addCompanyModal">
+          <i class="bi bi-plus-circle" style="font-size:2rem;color:var(--ic-primary);"></i>
+          <h6 class="mt-3 mb-0">Add a company</h6>
+          <p class="ic-section-subtitle small mb-0">Set one up, then upload its interview experiences</p>
+        </button>
+      </div>
+    </div>
+
+    <section class="ic-features-band">
+      <div class="text-center mb-5">
+        <h2 class="ic-section-title">Why candidates trust Intervexa</h2>
+        <p class="ic-section-subtitle mx-auto" style="max-width:560px;">No canned advice — just what actually happened in the room, organized and searchable.</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-3">
+          <div class="ic-feature-card">
+            <div class="ic-feature-icon"><i class="bi bi-search"></i></div>
+            <h6 class="mb-2">Every answer, sourced</h6>
+            <p class="small mb-0">Nothing is guessed. Each response is pulled straight from the experiences you uploaded and matched with FAISS semantic search.</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="ic-feature-card">
+            <div class="ic-feature-icon"><i class="bi bi-diagram-3"></i></div>
+            <h6 class="mb-2">Built for the actual round</h6>
+            <p class="small mb-0">DSA, System Design, SQL or HR — pick a mode and retrieval re-prioritizes for the round you're walking into.</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="ic-feature-card">
+            <div class="ic-feature-icon"><i class="bi bi-shield-check"></i></div>
+            <h6 class="mb-2">Says "I don't know" on purpose</h6>
+            <p class="small mb-0">If your documents don't cover it, Intervexa tells you plainly instead of inventing a confident-sounding answer.</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="ic-feature-card">
+            <div class="ic-feature-icon"><i class="bi bi-hdd-network"></i></div>
+            <h6 class="mb-2">Nothing leaves your laptop</h6>
+            <p class="small mb-0">Embeddings, search and generation all run locally through Sentence Transformers, FAISS and Llama 3 via Ollama.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="ic-footer text-center border-top">
+    <div class="container">
+      <div class="fw-semibold mb-1">Intervexa</div>
+      <div>AI-powered interview prep, grounded in real experiences &middot; Runs 100% locally</div>
+    </div>
+  </footer>
+
+  {% include "_modals.html" %}
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</body>
+</html>

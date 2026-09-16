@@ -1,0 +1,62 @@
+{# Shared modals included on every page: Help & Support (FAQs) and Add Company. #}
+
+<div class="modal fade" id="supportModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content ic-modal">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-life-preserver me-2"></i>Help &amp; Support</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="accordion" id="faqAccordion">
+          <div class="text-center py-3">
+            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+          </div>
+        </div>
+
+        <hr class="my-4">
+
+        <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#addFaqForm">
+          <i class="bi bi-plus-lg me-1"></i>Suggest a question
+        </button>
+        <div class="collapse mt-3" id="addFaqForm">
+          <div class="mb-2">
+            <label class="form-label small fw-semibold">Question</label>
+            <input type="text" class="form-control" id="faqQuestionInput" maxlength="200" placeholder="e.g. Does Intervexa support scanned PDFs?">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Answer</label>
+            <textarea class="form-control" id="faqAnswerInput" rows="3" maxlength="1000"></textarea>
+          </div>
+          <button class="btn btn-primary btn-sm" id="submitFaqBtn" type="button"><i class="bi bi-send-fill me-1"></i>Add to FAQ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addCompanyModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content ic-modal">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-building-add me-2"></i>Add a company</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Company name</label>
+          <input type="text" class="form-control" id="newCompanyName" maxlength="60" placeholder="e.g. Netflix">
+        </div>
+        <div class="mb-2">
+          <label class="form-label fw-semibold">Icon</label>
+          <div class="d-flex flex-wrap gap-2" id="companyIconPicker"></div>
+        </div>
+        <p class="ic-section-subtitle small mb-0 mt-2">You'll be able to upload its interview experiences right after.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+        <button class="btn btn-primary" id="createCompanyBtn" type="button"><i class="bi bi-plus-circle me-1"></i>Create</button>
+      </div>
+    </div>
+  </div>
+</div>
